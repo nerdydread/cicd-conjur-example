@@ -59,6 +59,14 @@ jobs:
           which summon-conjur
           summon --version
 
+      - name: Debug rendering
+        run: |
+          set -ex
+          ls -R
+          which summon
+          which summon-conjur
+          which envsubst
+
       ####################################################
       # Render APIs using Conjur secrets
       ####################################################
