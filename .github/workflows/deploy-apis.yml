@@ -120,7 +120,7 @@ jobs:
         run: |
           cd rendered-apis
 
-          echo '{"type":"apis","files":[' > .tyk.json
+          echo '{"type":"oas","files":[' > .tyk.json
 
           first=true
           for file in *.json
