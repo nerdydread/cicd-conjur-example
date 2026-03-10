@@ -89,7 +89,8 @@ jobs:
           CONJUR_ACCOUNT: ${{ secrets.CONJUR_ACCOUNT }}
           CONJUR_AUTHN_LOGIN: admin
           CONJUR_AUTHN_API_KEY: ${{ secrets.CONJUR_API_KEY }}
-          CONJUR_SKIP_VERIFY: "true"
+          CONJUR_SSL_CERTIFICATE: ${{ github.workspace }}/conjur/conjur-ca.pem
+          CONJUR_SKIP_VERIFY: true
         run: |
           set -ex
           mkdir -p rendered-apis
