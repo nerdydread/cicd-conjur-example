@@ -54,7 +54,10 @@ jobs:
           which envsubst
 
       - name: Verify summon provider
-        run: summon --version && summon -l
+        run: |
+          which summon
+          which summon-conjur
+          summon --version
 
       ####################################################
       # Render APIs using Conjur secrets
