@@ -76,6 +76,7 @@ jobs:
           CONJUR_ACCOUNT: ${{ secrets.CONJUR_ACCOUNT }}
           CONJUR_AUTHN_LOGIN: admin
           CONJUR_AUTHN_API_KEY: ${{ secrets.CONJUR_API_KEY }}
+          SUMMON_PROVIDER_PATH: /usr/local/bin
         run: |
 
           mkdir -p rendered-apis
@@ -85,8 +86,7 @@ jobs:
           do
             API=$(basename $file .json)
 
-            summon --provider summon-conjur \
-                   -f secrets/conjur-map.yml \
+            summon -f secrets/conjur-map.yml \
                    -D ENV=$ENV \
                    -D API=$API \
                    bash -c "/usr/bin/envsubst < '$file' > rendered-apis/$API.json"
