@@ -85,7 +85,8 @@ jobs:
           do
             API=$(basename $file .json)
 
-            summon -f secrets/conjur-map.yml \
+            summon --provider summon-conjur \
+                   -f secrets/conjur-map.yml \
                    -D ENV=$ENV \
                    -D API=$API \
                    bash -c "/usr/bin/envsubst < '$file' > rendered-apis/$API.json"
