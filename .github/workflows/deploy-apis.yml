@@ -80,6 +80,12 @@ jobs:
           ls -l /usr/local/lib/summon || true
           which envsubst
 
+      - name: Verify CA file
+        run: |
+          ls -l conjur
+          file conjur/conjur-ca.pem
+          head -5 conjur/conjur-ca.pem
+
       ####################################################
       # Render APIs using Conjur secrets
       ####################################################
