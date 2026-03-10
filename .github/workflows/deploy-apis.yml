@@ -1,44 +1,114 @@
+name: Deploy Tyk APIs
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy"
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+
 jobs:
-  deploy-dev:
+  deploy:
     runs-on: ubuntu-latest
 
     env:
-      ENV: dev
+      ENV: ${{ github.event.inputs.environment }}
 
     steps:
       - uses: actions/checkout@v4
 
+      ####################################################
+      # Install summon
+      ####################################################
       - name: Install summon
         run: |
           curl -L https://github.com/cyberark/summon/releases/latest/download/summon-linux-amd64.tar.gz | tar zx
           sudo mv summon /usr/local/bin/
 
+      ####################################################
+      # Install summon-conjur
+      ####################################################
       - name: Install summon-conjur
         run: |
           curl -L https://github.com/cyberark/summon-conjur/releases/latest/download/summon-conjur-linux-amd64 -o summon-conjur
           chmod +x summon-conjur
           sudo mv summon-conjur /usr/local/bin/
 
-      - name: Deploy APIs
+      ####################################################
+      # Install envsubst
+      ####################################################
+      - name: Install envsubst
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext-base
+
+      ####################################################
+      # Install tyk-sync
+      ####################################################
+      - name: Install tyk-sync
+        run: |
+          curl -L https://github.com/TykTechnologies/tyk-sync/releases/latest/download/tyk-sync_linux_amd64.tar.gz \
+          | tar zx
+          sudo mv tyk-sync /usr/local/bin/
+          tyk-sync version
+
+      ####################################################
+      # Render APIs using Conjur secrets
+      ####################################################
+      - name: Render API definitions
         env:
           CONJUR_APPLIANCE_URL: ${{ secrets.CONJUR_URL }}
           CONJUR_ACCOUNT: ${{ secrets.CONJUR_ACCOUNT }}
           CONJUR_AUTHN_LOGIN: admin
           CONJUR_AUTHN_API_KEY: ${{ secrets.CONJUR_API_KEY }}
-
         run: |
-          for file in dev/apis/*.json
+
+          mkdir -p rendered-apis
+
+          for file in $ENV/apis/*.json
           do
             API=$(basename $file .json)
 
             summon -f secrets/conjur-map.yml \
                    -D ENV=$ENV \
                    -D API=$API \
-                   envsubst < $file > rendered.json
-
-            curl -X POST \
-              "${{ secrets.TYK_DASHBOARD_URL }}/api/apis" \
-              -H "x-tyk-authorization: ${{ secrets.TYK_DASHBOARD_API_KEY }}" \
-              -H "Content-Type: application/json" \
-              -d @rendered.json
+                   envsubst < $file > rendered-apis/$API.json
           done
+
+      ####################################################
+      # Generate tyk-sync index file
+      ####################################################
+      - name: Generate .tyk.json
+        run: |
+          cd rendered-apis
+          echo '{"type":"apis","files":[' > .tyk.json
+
+          first=true
+          for file in *.json
+          do
+            if [ "$first" = true ]; then
+              echo "\"$file\"" >> .tyk.json
+              first=false
+            else
+              echo ",\"$file\"" >> .tyk.json
+            fi
+          done
+
+          echo "]}" >> .tyk.json
+          cat .tyk.json
+
+      ####################################################
+      # Sync APIs to Tyk
+      ####################################################
+      - name: Deploy APIs using tyk-sync
+        run: |
+          tyk-sync sync \
+            --dashboard "${{ secrets.TYK_DASHBOARD_URL }}" \
+            --secret "${{ secrets.TYK_DASHBOARD_API_KEY }}" \
+            --path ./rendered-apis \
+            --no-delete
