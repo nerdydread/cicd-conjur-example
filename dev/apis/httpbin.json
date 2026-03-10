@@ -25,7 +25,7 @@
       }
     },
     "upstream": {
-      "url": ${target_url} 
+      "url": "${target_url}" 
     },
     "server": {
       "listenPath": {
