@@ -1,0 +1,44 @@
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+
+    env:
+      ENV: dev
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install summon
+        run: |
+          curl -L https://github.com/cyberark/summon/releases/latest/download/summon-linux-amd64.tar.gz | tar zx
+          sudo mv summon /usr/local/bin/
+
+      - name: Install summon-conjur
+        run: |
+          curl -L https://github.com/cyberark/summon-conjur/releases/latest/download/summon-conjur-linux-amd64 -o summon-conjur
+          chmod +x summon-conjur
+          sudo mv summon-conjur /usr/local/bin/
+
+      - name: Deploy APIs
+        env:
+          CONJUR_APPLIANCE_URL: ${{ secrets.CONJUR_URL }}
+          CONJUR_ACCOUNT: ${{ secrets.CONJUR_ACCOUNT }}
+          CONJUR_AUTHN_LOGIN: admin
+          CONJUR_AUTHN_API_KEY: ${{ secrets.CONJUR_API_KEY }}
+
+        run: |
+          for file in dev/apis/*.json
+          do
+            API=$(basename $file .json)
+
+            summon -f secrets/conjur-map.yml \
+                   -D ENV=$ENV \
+                   -D API=$API \
+                   envsubst < $file > rendered.json
+
+            curl -X POST \
+              "${{ secrets.TYK_DASHBOARD_URL }}/api/apis" \
+              -H "x-tyk-authorization: ${{ secrets.TYK_DASHBOARD_API_KEY }}" \
+              -H "Content-Type: application/json" \
+              -d @rendered.json
+          done
