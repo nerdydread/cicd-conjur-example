@@ -28,7 +28,8 @@ jobs:
       - name: Install summon
         run: |
           curl -L https://github.com/cyberark/summon/releases/latest/download/summon-linux-amd64.tar.gz | tar zx
-          sudo mv summon /usr/local/bin/
+          sudo mv summon /usr/local/bin/summon
+          chmod +x /usr/local/bin/summon
 
       ####################################################
       # Install summon-conjur
@@ -37,8 +38,7 @@ jobs:
         run: |
           curl -L https://github.com/cyberark/summon-conjur/releases/latest/download/summon-conjur-linux-amd64 -o summon-conjur
           chmod +x summon-conjur
-          sudo mkdir -p /usr/local/lib/summon
-          sudo mv summon-conjur /usr/local/lib/summon/
+          sudo mv summon-conjur /usr/local/bin/summon-conjur
 
       ####################################################
       # Install envsubst
@@ -50,9 +50,9 @@ jobs:
       
       - name: Debug tools
         run: |
-          which summon
-          which summon-conjur
-          which envsubst
+          which summon || true
+          which summon-conjur || true
+          which envsubst || true
 
       - name: Verify summon provider
         run: |
