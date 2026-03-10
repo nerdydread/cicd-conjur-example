@@ -134,9 +134,11 @@ jobs:
           echo "]}" >> .tyk.json
           cat .tyk.json
 
-      - name: Debug Tyk settings
+      - name: Debug Tyk Settings
+        env:
+          TYK_DASHBOARD_URL: ${{ secrets.TYK_DASHBOARD_URL }}
         run: |
-          echo "Dashboard URL: ${{ secrets.TYK_DASHBOARD_URL }}"
+          echo "Dashboard URL: $TYK_DASHBOARD_URL"
       
       ############################################
       # Deploy APIs using tyk-sync Docker image
