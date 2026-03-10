@@ -88,7 +88,7 @@ jobs:
             summon -f secrets/conjur-map.yml \
                    -D ENV=$ENV \
                    -D API=$API \
-                   /usr/bin/envsubst < $file > rendered-apis/$API.json
+                   bash -c "/usr/bin/envsubst < '$file' > rendered-apis/$API.json"
           done
 
       ####################################################
