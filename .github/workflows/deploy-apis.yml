@@ -110,7 +110,8 @@ jobs:
                    -f secrets/conjur-map.yml \
                    -D ENV=$ENV \
                    -D API=$API \
-                   bash -c "/usr/bin/envsubst < '$file' > rendered-apis/$API.json"
+                   bash -c "/usr/bin/envsubst < '$file' > tmp.json"
+            jq '{oas: .}' tmp.json > rendered-apis/$API.json
           done
 
       ####################################################
@@ -120,7 +121,7 @@ jobs:
         run: |
           cd rendered-apis
 
-          echo '{"type":"oas","files":[' > .tyk.json
+          echo '{"type":"apidef","files":[' > .tyk.json
 
           first=true
           for file in *.json
