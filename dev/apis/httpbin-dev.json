@@ -1,0 +1,47 @@
+{
+  "components": {},
+  "info": {
+    "title": "httpbin",
+    "version": "1.0.0"
+  },
+  "openapi": "3.0.3",
+  "paths": {},
+  "servers": [
+    {
+      "url": "http://tyk-gateway:8080/httpbin"
+    },
+    {
+      "url": "/httpbin"
+    }
+  ],
+  "x-tyk-api-gateway": {
+    "info": {
+      "id": "httpbin",
+      "dbId": "69b00b1260399f0001764eec",
+      "orgId": "69af74c815f4be00017699cb",
+      "name": "httpbin",
+      "state": {
+        "active": true
+      }
+    },
+    "upstream": {
+      "url": ${target_url} 
+    },
+    "server": {
+      "listenPath": {
+        "value": "/httpbin/",
+        "strip": true
+      }
+    },
+    "middleware": {
+      "global": {
+        "contextVariables": {
+          "enabled": true
+        },
+        "trafficLogs": {
+          "enabled": true
+        }
+      }
+    }
+  }
+}

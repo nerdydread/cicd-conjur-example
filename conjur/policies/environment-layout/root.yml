@@ -1,0 +1,12 @@
+- !policy
+  id: data
+  body:
+
+  - !policy
+    id: dev
+
+  - !policy
+    id: staging
+
+  - !policy
+    id: prod

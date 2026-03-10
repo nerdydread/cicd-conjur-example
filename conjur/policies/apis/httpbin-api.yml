@@ -1,0 +1,5 @@
+- !policy
+  id: httpbin
+  body:
+
+  - !variable target_url
