@@ -146,8 +146,8 @@ jobs:
           docker run --rm \
             -v ${{ github.workspace }}/rendered-apis:/app/data \
             tykio/tyk-sync:v2.1.6 \
+            sync \
             --dashboard "${{ secrets.TYK_DASHBOARD_URL }}" \
             --secret "${{ secrets.TYK_DASHBOARD_API_KEY }}" \
-            sync \
             --path /app/data \
             --no-delete
