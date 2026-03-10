@@ -48,16 +48,6 @@ jobs:
           sudo apt-get install -y gettext-base
 
       ####################################################
-      # Install tyk-sync
-      ####################################################
-      - name: Install tyk-sync
-        run: |
-          curl -L https://github.com/TykTechnologies/tyk-sync/releases/latest/download/tyk-sync_linux_amd64.tar.gz \
-          | tar zx
-          sudo mv tyk-sync /usr/local/bin/
-          tyk-sync version
-
-      ####################################################
       # Render APIs using Conjur secrets
       ####################################################
       - name: Render API definitions
@@ -102,13 +92,16 @@ jobs:
           echo "]}" >> .tyk.json
           cat .tyk.json
 
-      ####################################################
-      # Sync APIs to Tyk
-      ####################################################
-      - name: Deploy APIs using tyk-sync
+      ############################################
+      # Deploy APIs using tyk-sync Docker image
+      ############################################
+      - name: Sync APIs to Tyk
         run: |
-          tyk-sync sync \
+          docker run --rm \
+            -v ${{ github.workspace }}/rendered-apis:/app/data \
+            tykio/tyk-sync:latest \
+            sync \
             --dashboard "${{ secrets.TYK_DASHBOARD_URL }}" \
             --secret "${{ secrets.TYK_DASHBOARD_API_KEY }}" \
-            --path ./rendered-apis \
+            --path /app/data \
             --no-delete
