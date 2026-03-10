@@ -46,6 +46,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y gettext-base
+      
+      - name: Debug tools
+        run: |
+          which summon
+          which summon-conjur
+          which envsubst
 
       ####################################################
       # Render APIs using Conjur secrets
@@ -99,7 +105,7 @@ jobs:
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/rendered-apis:/app/data \
-            tykio/tyk-sync:latest \
+            tykio/tyk-sync:v2.1.6 \
             sync \
             --dashboard "${{ secrets.TYK_DASHBOARD_URL }}" \
             --secret "${{ secrets.TYK_DASHBOARD_API_KEY }}" \
