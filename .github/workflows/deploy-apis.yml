@@ -36,9 +36,19 @@ jobs:
       ####################################################
       - name: Install summon-conjur
         run: |
-          curl -L https://github.com/cyberark/summon-conjur/releases/latest/download/summon-conjur-linux-amd64 -o summon-conjur
+          sudo mkdir -p /usr/local/lib/summon
+          curl -L https://github.com/cyberark/summon-conjur/releases/latest/download/summon-conjur-linux-amd64 \
+            -o summon-conjur
           chmod +x summon-conjur
-          sudo mv summon-conjur /usr/local/bin/summon-conjur
+          sudo mv summon-conjur /usr/local/lib/summon/summon-conjur
+
+      ####################################################
+      # Verify summon providers
+      ####################################################
+      - name: Verify summon providers
+        run: |
+          ls -l /usr/local/lib/summon
+          summon -V
 
       ####################################################
       # Install envsubst
@@ -86,7 +96,8 @@ jobs:
           do
             API=$(basename $file .json)
 
-            summon -f secrets/conjur-map.yml \
+            summon --provider summon-conjur
+                   -f secrets/conjur-map.yml \
                    -D ENV=$ENV \
                    -D API=$API \
                    bash -c "/usr/bin/envsubst < '$file' > rendered-apis/$API.json"
