@@ -75,7 +75,7 @@ jobs:
           set -ex
           ls -R
           which summon
-          which summon-conjur
+          ls -l /usr/local/lib/summon || true
           which envsubst
 
       ####################################################
