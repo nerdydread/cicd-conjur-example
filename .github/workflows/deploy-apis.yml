@@ -37,7 +37,8 @@ jobs:
         run: |
           curl -L https://github.com/cyberark/summon-conjur/releases/latest/download/summon-conjur-linux-amd64 -o summon-conjur
           chmod +x summon-conjur
-          sudo mv summon-conjur /usr/local/bin/
+          sudo mkdir -p /usr/local/lib/summon
+          sudo mv summon-conjur /usr/local/lib/summon/
 
       ####################################################
       # Install envsubst
@@ -76,9 +77,8 @@ jobs:
           CONJUR_ACCOUNT: ${{ secrets.CONJUR_ACCOUNT }}
           CONJUR_AUTHN_LOGIN: admin
           CONJUR_AUTHN_API_KEY: ${{ secrets.CONJUR_API_KEY }}
-          SUMMON_PROVIDER_PATH: /usr/local/bin
         run: |
-
+          set -ex
           mkdir -p rendered-apis
           ls -R
 
