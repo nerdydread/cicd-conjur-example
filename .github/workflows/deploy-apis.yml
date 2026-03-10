@@ -119,7 +119,23 @@ jobs:
       - name: Generate .tyk.json
         run: |
           cd rendered-apis
-          jq -n '{type:"apis", files:[inputs | {file:.}]}' <<< "$(ls *.json)" > .tyk.json
+
+          echo '{"type":"apis","files":[' > .tyk.json
+
+          first=true
+          for file in *.json
+          do
+            if [ "$first" = true ]; then
+              echo "{\"file\":\"$file\"}" >> .tyk.json
+              first=false
+            else
+              echo ",{\"file\":\"$file\"}" >> .tyk.json
+            fi
+          done
+
+          echo "]}" >> .tyk.json
+
+          cat .tyk.json
 
       - name: Debug Tyk Settings
         env:
