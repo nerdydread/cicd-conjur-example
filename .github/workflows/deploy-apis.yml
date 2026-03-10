@@ -96,7 +96,7 @@ jobs:
           do
             API=$(basename $file .json)
 
-            summon --provider summon-conjur
+            summon --provider summon-conjur \
                    -f secrets/conjur-map.yml \
                    -D ENV=$ENV \
                    -D API=$API \
