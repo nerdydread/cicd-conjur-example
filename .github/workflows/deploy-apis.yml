@@ -12,6 +12,10 @@ on:
           - staging
           - prod
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -21,7 +25,11 @@ jobs:
       ENV: ${{ github.event.inputs.environment }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+        with:
+        fetch-depth: 0
+        token: ${{ secrets.GH_PR_TOKEN }}
+        persist-credentials: false
 
       ####################################################
       # Install summon
