@@ -186,6 +186,13 @@ jobs:
             name=$(basename "$file")
             cp "$file" "staging/apis/$name"
           done
+          
+      - name: Clean up generated files before PR
+        if: ${{ github.event.inputs.environment == 'dev' }}
+        run: |
+          rm -f tmp.json
+          rm -rf rendered-apis
+          git status --short
 
       - name: Create promotion PR to STG
         uses: peter-evans/create-pull-request@v7
@@ -200,3 +207,5 @@ jobs:
           labels: |
             promotion
             staging
+          add-paths: |
+            staging/apis/**
