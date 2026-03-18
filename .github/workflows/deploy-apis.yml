@@ -159,3 +159,22 @@ jobs:
             --secret "${{ secrets.TYK_DASHBOARD_API_KEY }}" \
             --path /app/data \
             --no-delete
+      
+      ############################################
+      # If deploy succeeded, promote changed files
+      ############################################      
+      - name: Copy changed DEV APIs to STAGING
+        run: |
+          mkdir -p staging/apis
+
+          CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'dev/apis/*.json' || true)
+
+          if [ -z "$CHANGED" ]; then
+            echo "No changed dev API files found."
+            exit 0
+          fi
+
+          for file in $CHANGED; do
+            name=$(basename "$file")
+            cp "$file" "staging/apis/$name"
+          done
