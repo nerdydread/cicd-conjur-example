@@ -27,9 +27,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-        fetch-depth: 0
-        token: ${{ secrets.GH_PR_TOKEN }}
-        persist-credentials: false
+          fetch-depth: 0
+          token: ${{ secrets.GH_PR_TOKEN }}
+          persist-credentials: false
 
       ####################################################
       # Install summon
