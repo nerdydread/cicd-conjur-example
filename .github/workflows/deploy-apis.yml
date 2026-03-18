@@ -190,6 +190,7 @@ jobs:
       - name: Create promotion PR to STG
         uses: peter-evans/create-pull-request@v7
         with:
+          token: ${{ secrets.GH_PR_TOKEN }}
           commit-message: "Promote API(s) from DEV to STAGING"
           branch: promote/dev-to-staging
           delete-branch: true
