@@ -178,3 +178,16 @@ jobs:
             name=$(basename "$file")
             cp "$file" "staging/apis/$name"
           done
+
+      - name: Create promotion PR to STG
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "Promote API(s) from DEV to STAGING"
+          branch: promote/dev-to-staging
+          delete-branch: true
+          title: "Promote API(s) from DEV to STAGING"
+          body: |
+            Automated promotion PR after successful DEV deployment.
+          labels: |
+            promotion
+            staging
